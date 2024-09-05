@@ -49,7 +49,6 @@ class CityPage extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               child: const Text('날씨 정보 얻기'),
-              
             ),
           ],
         ),
@@ -70,16 +69,18 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   late String _temperature = '';
   late String _description = '';
+  late String _dustLevel = '';
   late String _errorMessage = '';
 
   @override
   void initState() {
     super.initState();
     _fetchWeather();
+    _fetchDustInfo();
   }
 
   Future<void> _fetchWeather() async {
-    const apiKey = 'd94efd92f6aabb4cbc01b958df71208a'; // OpenWeatherMap API 키를 여기에 입력하세요.
+    const apiKey = 'd94efd92f6aabb4cbc01b958df71208a'; // OpenWeatherMap API 키
     final url = Uri.parse(
         'https://api.openweathermap.org/data/2.5/weather?q=${widget.city}&appid=$apiKey&units=metric');
 
@@ -94,12 +95,36 @@ class _WeatherPageState extends State<WeatherPage> {
         });
       } else {
         setState(() {
-          _errorMessage = 'City not found';
+          _errorMessage = '도시를 찾을 수 없습니다.';
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load weather';
+        _errorMessage = '날씨 정보를 가져오는데 실패했습니다.';
+      });
+    }
+  }
+
+  Future<void> _fetchDustInfo() async {
+    const apiKey = 'DvRGLsyiofsY5G3PjxuvmtPVEOgjJ1qN3GwZat%2B8WUhUF9KSzHlkouNoZH74IBs0MT9KX6C7fVvPWVhopYv7yQ%3D%3D'; // 한국 공공 데이터 포털 API 키
+    final url = Uri.parse(
+        'http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=$apiKey&returnType=json&numOfRows=1&pageNo=1&stationName=${widget.city}&dataTerm=DAILY&ver=1.0');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _dustLevel = '미세먼지: ${data['response']['body']['items'][0]['pm10Value']} ㎍/㎥';
+        });
+      } else {
+        setState(() {
+          _errorMessage = '미세먼지 정보를 가져올 수 없습니다.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = '미세먼지 정보를 가져오는데 실패했습니다.';
       });
     }
   }
@@ -109,25 +134,70 @@ class _WeatherPageState extends State<WeatherPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather Info'),
-        backgroundColor: const Color.fromARGB(255, 224, 238, 34),
+        backgroundColor: Colors.lightBlue[300],
       ),
       body: Center(
         child: _errorMessage.isEmpty
-            ? Column(
+            ? Card(
+                margin: const EdgeInsets.all(20),
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Temperature: $_temperature °C',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Description: $_description',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _dustLevel,
+                        style: const TextStyle(
+                          color: Colors.redAccent,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[400],
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('Back'),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Temperature: $_temperature °C',
+                    _errorMessage,
                     style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 24),
-                    
-                  ),
-                  Text(
-                    'Description: $_description',
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 24),
+                      fontSize: 24,
+                      color: Colors.red,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -137,28 +207,6 @@ class _WeatherPageState extends State<WeatherPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[400],
                       foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Back'),
-                  ),
-                ],
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _errorMessage,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      color: Colors.red),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[400],
-                      foregroundColor: Colors.pink,
                     ),
                     child: const Text('Back'),
                   ),
