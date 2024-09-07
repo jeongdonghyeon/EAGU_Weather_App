@@ -6,6 +6,7 @@ void main() {
   runApp(const MaterialApp(
     title: 'EAGU Weather App',
     home: CityPage(),
+    debugShowCheckedModeBanner: false,
   ));
 }
 
@@ -18,20 +19,32 @@ class CityPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EAGU Weather App'),
-        backgroundColor: Colors.lightBlue[300],
+        title: const Text('EAGU Weather App', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF00796B),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const Text(
+              '도시 이름을 입력하세요',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: cityController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
                 labelText: '도시 이름',
-                labelStyle: TextStyle(color: Colors.black),
+                labelStyle: const TextStyle(color: Colors.black54),
+                prefixIcon: const Icon(Icons.location_city, color: Colors.black45),
               ),
             ),
             const SizedBox(height: 20),
@@ -45,10 +58,12 @@ class CityPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[400],
+                backgroundColor: const Color(0xFF26A69A),
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              child: const Text('날씨 정보 얻기'),
+              child: const Text('날씨 정보 얻기', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -133,59 +148,73 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather Info'),
-        backgroundColor: Colors.lightBlue[300],
+        title: const Text('Weather Info', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF00796B),
       ),
       body: Center(
         child: _errorMessage.isEmpty
             ? Card(
                 margin: const EdgeInsets.all(20),
-                elevation: 8,
+                elevation: 20,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Temperature: $_temperature °C',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue[100]!, Colors.blue[300]!],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.thermostat_outlined, color: Colors.blue[700], size: 50),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Temperature: $_temperature °C',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Description: $_description',
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 20,
+                        const SizedBox(height: 10),
+                        Text(
+                          'Description: $_description',
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 22,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        _dustLevel,
-                        style: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 20,
+                        const SizedBox(height: 10),
+                        Text(
+                          _dustLevel,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[400],
-                          foregroundColor: Colors.white,
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF26A69A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          child: const Text('Back', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
-                        child: const Text('Back'),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -205,10 +234,12 @@ class _WeatherPageState extends State<WeatherPage> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[400],
+                      backgroundColor: const Color(0xFF26A69A),
                       foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     ),
-                    child: const Text('Back'),
+                    child: const Text('Back', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
